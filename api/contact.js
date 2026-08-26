@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: `Formulario de contacto <${process.env.ZOHO_USER}>`,
+      from: `Formulario de contacto <${process.env.ZOHO_USER}>`, // administracion@disenartemx.com
       to: 'it@disenartemx.com',
       cc: 'marketing@disenartemx.com',
       replyTo: email,
