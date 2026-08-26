@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="_ds/modernist-12de30b2-127b-43c1-8a71-628e0d2dce13/styles.css">
+  <script src="_ds/modernist-12de30b2-127b-43c1-8a71-628e0d2dce13/_ds_bundle.js"></script>
+  <style>
+    body { margin: 0; }
+  </style>
+</helmet>
+<div style="min-height:100vh; background:var(--color-bg); display:flex; justify-content:center; padding:64px 24px; font-family:var(--font-body); color:var(--color-text); box-sizing:border-box;">
+  <div style="width:100%; max-width:640px;">
+    <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:color-mix(in srgb, var(--color-text) 60%, transparent); margin-bottom:12px;">Disenarte</div>
+    <h1 style="font-size:40px; margin:0 0 8px;">Contacto</h1>
+    <p style="font-size:15px; color:color-mix(in srgb, var(--color-text) 65%, transparent); margin:0;">Cuéntanos qué necesitas. Te respondemos en menos de 24 horas.</p>
+    <hr class="hr" style="margin:32px 0;">
+
+    <sc-if value="{{ status }}" hint-placeholder-val="idle">
+    </sc-if>
+
+    <div style="display:{{ formVisible }};">
+      <form onSubmit="{{ handleSubmit }}" style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input class="input" id="nombre" name="nombre" type="text" required="{{ true }}" placeholder="Tu nombre" value="{{ fields.nombre }}" onChange="{{ onChange }}">
+          </div>
+          <div class="field">
+            <label for="empresa">Empresa</label>
+            <input class="input" id="empresa" name="empresa" type="text" placeholder="Nombre de tu empresa" value="{{ fields.empresa }}" onChange="{{ onChange }}">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="field">
+            <label for="email">Email</label>
+            <input class="input" id="email" name="email" type="email" required="{{ true }}" placeholder="tu@correo.com" value="{{ fields.email }}" onChange="{{ onChange }}">
+          </div>
+          <div class="field">
+            <label for="telefono">Teléfono</label>
+            <input class="input" id="telefono" name="telefono" type="tel" required="{{ phoneRequired }}" placeholder="55 0000 0000" value="{{ fields.telefono }}" onChange="{{ onChange }}">
+          </div>
+        </div>
+        <div class="field">
+          <label for="asunto">Asunto</label>
+          <input class="input" id="asunto" name="asunto" type="text" required="{{ true }}" placeholder="¿Sobre qué quieres hablar?" value="{{ fields.asunto }}" onChange="{{ onChange }}">
+        </div>
+        <div class="field">
+          <label for="mensaje">Mensaje</label>
+          <textarea class="input" id="mensaje" name="mensaje" required="{{ true }}" placeholder="Escribe tu mensaje" value="{{ fields.mensaje }}" onChange="{{ onChange }}"></textarea>
+        </div>
+
+        <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px; color:var(--color-accent-700); border:1px solid var(--color-accent-300); background:var(--color-accent-100); padding:10px 14px;">{{ errorMessage }}</div>
+        </sc-if>
+
+        <button class="btn btn-primary btn-block" type="submit" disabled="{{ isSubmitting }}">{{ submitLabel }}</button>
+      </form>
+    </div>
+
+    <sc-if value="{{ isSuccess }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 0;">
+        <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--color-accent-700); margin-bottom:8px;">Enviado</div>
+        <h2 style="font-size:24px; margin:0 0 8px;">Gracias, {{ fields.nombre }}.</h2>
+        <p style="font-size:15px; color:color-mix(in srgb, var(--color-text) 65%, transparent); margin:0;">Recibimos tu mensaje y te contactaremos pronto.</p>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;endpoint&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;/api/contact&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;requirePhone&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    fields: { nombre: "", empresa: "", email: "", telefono: "", asunto: "", mensaje: "" },
+    status: "idle", // idle | submitting | success | error
+    errorMessage: ""
+  };
+
+  onChange = (e) => {
+    const { name, value } = e.target;
+    this.setState(s => ({ fields: { ...s.fields, [name]: value } }));
+  };
+
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({ status: "submitting", errorMessage: "" });
+    const endpoint = this.props.endpoint || "/api/contact";
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(this.state.fields)
+      });
+      if (!res.ok) throw new Error("request_failed");
+      this.setState({ status: "success" });
+    } catch (err) {
+      this.setState({ status: "error", errorMessage: "No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos directamente a it@disenartemx.com." });
+    }
+  };
+
+  renderVals() {
+    const isSubmitting = this.state.status === "submitting";
+    const isSuccess = this.state.status === "success";
+    const isError = this.state.status === "error";
+    return {
+      fields: this.state.fields,
+      onChange: this.onChange,
+      handleSubmit: this.handleSubmit,
+      isSubmitting,
+      isSuccess,
+      isError,
+      errorMessage: this.state.errorMessage,
+      formVisible: isSuccess ? "none" : "block",
+      submitLabel: isSubmitting ? "Enviando..." : "Enviar mensaje",
+      phoneRequired: this.props.requirePhone ?? false,
+      status: this.state.status
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,71 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<title>Contacto — Disenarte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-bg: #f3f2f2;
+    --color-text: #201e1d;
+    --color-accent: #ec3013;
+    --color-accent-100: #fff2ef;
+    --color-accent-300: #ffc4b8;
+    --color-accent-600: #dd2b0f;
+    --color-accent-700: #ae1800;
+    --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+    --font: "Archivo", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font); }
+  .wrap { min-height: 100vh; display: flex; justify-content: center; padding: 64px 24px; }
+  .col { width: 100%; max-width: 640px; }
+  .kicker { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 60%, transparent); margin-bottom: 12px; }
+  h1 { font-family: var(--font); font-weight: 800; font-size: 40px; margin: 0 0 8px; letter-spacing: -0.015em; }
+  h2 { font-family: var(--font); font-weight: 800; font-size: 24px; margin: 0 0 8px; }
+  p { font-size: 15px; color: color-mix(in srgb, var(--color-text) 65%, transparent); margin: 0; }
+  .hr { height: 2px; border: 0; margin: 32px 0; background: var(--color-divider); }
+  form { display: flex; flex-direction: column; gap: 20px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .field label { display: block; font-size: 12px; margin-bottom: 5px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+  .input {
+    width: 100%; min-height: 36px; padding: 6px 10px; font: inherit; font-size: 14px;
+    color: var(--color-text); background: transparent; border: 1px solid var(--color-divider);
+    border-radius: 0; caret-color: var(--color-accent);
+  }
+  .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+  .input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 0; border-color: var(--color-accent); }
+  textarea.input { min-height: 90px; resize: vertical; }
+  ::placeholder { color: color-mix(in srgb, var(--color-text) 40%, transparent); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: flex-start; text-align: left;
+    width: 100%; cursor: pointer; font-family: var(--font); font-weight: 800; font-size: 14px;
+    color: var(--color-bg); background: var(--color-accent); border: 0; padding: 10px 14px;
+    margin-top: 8px;
+  }
+  .btn:hover { background: var(--color-accent-600); }
+  .btn:active { background: var(--color-accent-700); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .error { font-size: 13px; color: var(--color-accent-700); border: 1px solid var(--color-accent-300); background: var(--color-accent-100); padding: 10px 14px; }
+  a { color: var(--color-accent); }
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-<style>
-  body { margin: 0; }
-  input::placeholder, textarea::placeholder { color: #9AA5B1; }
-  input:focus, textarea:focus { border-color: #846AE8 !important; box-shadow: 0 0 0 3px rgba(132,106,232,0.15); }
-</style>
-</helmet>
-<div style="min-height: 100vh; width: 100%; background: #EAEEF2; display: flex; align-items: center; justify-content: center; padding: 60px 20px; font-family: Arial, Helvetica, sans-serif; box-sizing: border-box;">
-  <div style="width: 100%; max-width: 700px; border-radius: 10px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden;">
-    <div style="padding: 40px 40px 50px;">
-      <div style="font-size: 22px; font-weight: bold; color: #222; padding-bottom: 30px;">Un experto te atenderá</div>
+<div class="wrap">
+  <div class="col">
+    <div class="kicker">Disenarte</div>
+    <h1>Contacto</h1>
+    <p>Cuéntanos qué necesitas. Te respondemos en menos de 24 horas.</p>
+    <hr class="hr">
 
-      <sc-for list="{{ fields }}" as="f" hint-placeholder-count="6">
-        <div style="margin-bottom: 20px;">
-          <div style="font-size: 14px; color: #222; padding-bottom: 7px;">{{ f.label }}</div>
-          <div style="position: relative;">
-            <sc-if value="{{ f.multiline }}" hint-placeholder-val="{{ false }}">
-              <textarea placeholder="{{ f.placeholder }}" style="width: 100%; box-sizing: border-box; border: 1px solid {{ f.mandatory ? '#BDC8D3' : '#BDC8D3' }}; border-radius: 4px; padding: 10px 15px; font-size: 15px; font-family: inherit; min-height: 100px; resize: vertical; border-inline-start: {{ f.mandatory ? '3px solid #ff6a6a' : '1px solid #BDC8D3' }};"></textarea>
-            </sc-if>
-            <sc-if value="{{ f.notMultiline }}" hint-placeholder-val="{{ true }}">
-              <input type="{{ f.type }}" placeholder="{{ f.placeholder }}" style="width: 100%; box-sizing: border-box; border: 1px solid #BDC8D3; border-radius: 4px; padding: 10px 15px; min-height: 38px; font-size: 15px; font-family: inherit; border-inline-start: {{ f.mandatory ? '3px solid #ff6a6a' : '1px solid #BDC8D3' }};" />
-            </sc-if>
-          </div>
+    <form id="contact-form">
+      <div class="row">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input class="input" id="nombre" name="nombre" type="text" required placeholder="Tu nombre">
         </div>
-      </sc-for>
-
-      <div style="display: flex; justify-content: center; margin-top: 30px;">
-        <button type="button" onClick="{{ handleSubmit }}" style="padding: 10px 28px; border-radius: 20px; font-size: 15px; font-weight: bold; font-family: inherit; cursor: pointer; background-color: #846AE8; color: #fff; border: 1px solid #846AE8;">Submit</button>
+        <div class="field">
+          <label for="empresa">Empresa</label>
+          <input class="input" id="empresa" name="empresa" type="text" placeholder="Nombre de tu empresa">
+        </div>
       </div>
+      <div class="row">
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" required placeholder="tu@correo.com">
+        </div>
+        <div class="field">
+          <label for="telefono">Teléfono</label>
+          <input class="input" id="telefono" name="telefono" type="tel" placeholder="55 0000 0000">
+        </div>
+      </div>
+      <div class="field">
+        <label for="asunto">Asunto</label>
+        <input class="input" id="asunto" name="asunto" type="text" required placeholder="¿Sobre qué quieres hablar?">
+      </div>
+      <div class="field">
+        <label for="mensaje">Mensaje</label>
+        <textarea class="input" id="mensaje" name="mensaje" required placeholder="Escribe tu mensaje"></textarea>
+      </div>
+      <div id="form-error" class="error" style="display:none;"></div>
+      <button class="btn" type="submit" id="submit-btn">Enviar mensaje</button>
+    </form>
 
-      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
-        <div style="margin-top: 18px; text-align: center; font-size: 14px; color: #4E9F73;">Gracias, hemos recibido tu mensaje.</div>
-      </sc-if>
+    <div id="success" style="display:none; padding:32px 0;">
+      <div class="kicker" style="color:var(--color-accent-700);">Enviado</div>
+      <h2 id="success-name">Gracias.</h2>
+      <p>Recibimos tu mensaje y te contactaremos pronto.</p>
     </div>
   </div>
 </div>
-
-</x-dc>
-<script type="text/x-dc" data-dc-script>
-class Component extends DCLogic {
-  state = { submitted: false };
-
-  renderVals() {
-    const fields = [
-      { label: 'Nombre', placeholder: '', type: 'text', mandatory: true, multiline: false },
-      { label: 'Apellidos', placeholder: '', type: 'text', mandatory: true, multiline: false },
-      { label: 'Telefono', placeholder: '', type: 'tel', mandatory: false, multiline: false },
-      { label: 'Correo electronico', placeholder: '', type: 'email', mandatory: false, multiline: false },
-      { label: 'Nombre de Empresa', placeholder: '', type: 'text', mandatory: true, multiline: false },
-      { label: 'Mensaje', placeholder: '', type: 'text', mandatory: true, multiline: true },
-    ].map(f => ({ ...f, notMultiline: !f.multiline }));
-
-    return {
-      fields,
-      submitted: this.state.submitted,
-      handleSubmit: () => this.setState({ submitted: true }),
-    };
-  }
-}
+<script>
+  const form = document.getElementById('contact-form');
+  const btn = document.getElementById('submit-btn');
+  const errorBox = document.getElementById('form-error');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    const data = Object.fromEntries(new FormData(form).entries());
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('request_failed');
+      document.getElementById('success-name').textContent = `Gracias, ${data.nombre}.`;
+      form.style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    } catch (err) {
+      errorBox.textContent = 'No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos directamente a it@disenartemx.com.';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensaje';
+    }
+  });
 </script>
 </body>
 </html>
