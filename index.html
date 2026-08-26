@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contacto — Disenarte</title>
+
+<!-- ===== MEDICIÓN ===== -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H2JJVE75F3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-H2JJVE75F3');
+  gtag('config', 'AW-16751651845');
+</script>
+<script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init','2039038839979376');
+  fbq('track','PageView');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -38,6 +53,12 @@
   .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
   .input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 0; border-color: var(--color-accent); }
   textarea.input { min-height: 90px; resize: vertical; }
+  .diag { margin-top: 40px; border: 1px dashed var(--color-divider); padding: 16px; font-size: 12px; font-family: ui-monospace, monospace; }
+  .diag h3 { margin: 0 0 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-family: var(--font); }
+  .diag div { padding: 3px 0; }
+  .diag .ok { color: #0a7f3f; }
+  .diag .no { color: #ae1800; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   ::placeholder { color: color-mix(in srgb, var(--color-text) 40%, transparent); }
   .btn {
     display: inline-flex; align-items: center; justify-content: flex-start; text-align: left;
@@ -89,9 +110,28 @@
         <label for="mensaje">Mensaje</label>
         <textarea class="input" id="mensaje" name="mensaje" required placeholder="Escribe tu mensaje"></textarea>
       </div>
+      <div class="hp" aria-hidden="true">
+        <label for="sitio_web">No llenar</label>
+        <input id="sitio_web" name="sitio_web" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <input type="hidden" name="utm_source" id="f_utm_source">
+      <input type="hidden" name="utm_medium" id="f_utm_medium">
+      <input type="hidden" name="utm_campaign" id="f_utm_campaign">
+      <input type="hidden" name="gclid" id="f_gclid">
+      <input type="hidden" name="pagina_origen" id="f_pagina_origen">
+      <input type="hidden" name="ts" id="f_ts">
+
       <div id="form-error" class="error" style="display:none;"></div>
       <button class="btn" type="submit" id="submit-btn">Enviar mensaje</button>
     </form>
+
+    <div class="diag" id="diag">
+      <h3>Diagnóstico de medición</h3>
+      <div id="d-origen">Origen: leyendo…</div>
+      <div id="d-ga">GA4: esperando envío</div>
+      <div id="d-ads">Google Ads: esperando envío</div>
+      <div id="d-meta">Meta: esperando envío</div>
+    </div>
 
     <div id="success" style="display:none; padding:32px 0;">
       <div class="kicker" style="color:var(--color-accent-700);">Enviado</div>
@@ -101,6 +141,74 @@
   </div>
 </div>
 <script>
+/* ============================================================
+   ⚠️ PEGA AQUÍ LA ETIQUETA de la acción de conversión
+   "Formulario enviado" que crees en Google Ads.
+   Es lo que va después de la diagonal en send_to.
+   Ejemplo: 'AbC-D_efGhIjKl'
+   ============================================================ */
+const AW_ID = 'AW-16751651845';
+const AW_LABEL_FORMULARIO = 'REEMPLAZAR_ETIQUETA_FORMULARIO';
+
+const CLAVES = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'];
+
+function guardarOrigen() {
+  try {
+    const qs = new URLSearchParams(location.search);
+    const datos = {};
+    let hay = false;
+    CLAVES.forEach(k => { const v = qs.get(k); if (v) { datos[k] = v; hay = true; } });
+    if (hay) {
+      datos.landing = location.pathname;
+      sessionStorage.setItem('dz_origen', JSON.stringify(datos));
+    }
+  } catch (e) {}
+}
+
+function leerOrigen() {
+  try { return JSON.parse(sessionStorage.getItem('dz_origen') || '{}'); } catch (e) { return {}; }
+}
+
+function pintar(id, texto, clase) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = texto; el.className = clase || ''; }
+}
+
+guardarOrigen();
+const ORIGEN = leerOrigen();
+
+document.getElementById('f_utm_source').value = ORIGEN.utm_source || '';
+document.getElementById('f_utm_medium').value = ORIGEN.utm_medium || '';
+document.getElementById('f_utm_campaign').value = ORIGEN.utm_campaign || '';
+document.getElementById('f_gclid').value = ORIGEN.gclid || '';
+document.getElementById('f_pagina_origen').value = ORIGEN.landing || location.pathname;
+document.getElementById('f_ts').value = String(Date.now());
+
+pintar('d-origen',
+  (ORIGEN.utm_source || ORIGEN.gclid)
+    ? 'Origen: ' + (ORIGEN.utm_campaign || ORIGEN.utm_source) + (ORIGEN.gclid ? ' · gclid presente' : '')
+    : 'Origen: directo (agrega ?utm_source=prueba&utm_campaign=test&gclid=ABC123 a la URL para simular un anuncio)',
+  (ORIGEN.utm_source || ORIGEN.gclid) ? 'ok' : '');
+
+function dispararConversion() {
+  gtag('event', 'generate_lead', {
+    metodo: 'formulario_prueba',
+    campana: ORIGEN.utm_campaign || '(directo)',
+    fuente: ORIGEN.utm_source || '(directo)'
+  });
+  pintar('d-ga', 'GA4: generate_lead enviado ✓ (revisa Tiempo Real)', 'ok');
+
+  fbq('track', 'Lead', { content_name: 'formulario_prueba' });
+  pintar('d-meta', 'Meta: Lead enviado ✓', 'ok');
+
+  if (AW_LABEL_FORMULARIO.indexOf('REEMPLAZAR') === 0) {
+    pintar('d-ads', 'Google Ads: NO enviado — falta pegar la etiqueta de conversión', 'no');
+  } else {
+    gtag('event', 'conversion', { send_to: AW_ID + '/' + AW_LABEL_FORMULARIO });
+    pintar('d-ads', 'Google Ads: conversión enviada ✓ ' + AW_ID + '/' + AW_LABEL_FORMULARIO, 'ok');
+  }
+}
+
   const form = document.getElementById('contact-form');
   const btn = document.getElementById('submit-btn');
   const errorBox = document.getElementById('form-error');
@@ -117,6 +225,7 @@
         body: JSON.stringify(data)
       });
       if (!res.ok) throw new Error('request_failed');
+      dispararConversion();
       document.getElementById('success-name').textContent = `Gracias, ${data.nombre}.`;
       form.style.display = 'none';
       document.getElementById('success').style.display = 'block';
